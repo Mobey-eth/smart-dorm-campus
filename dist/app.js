@@ -9,9 +9,7 @@ const esc = (v) =>
   );
 const icons = {
   home: "house",
-  fridge: "snowflake",
   washer: "shirt",
-  microwave: "fire-burner",
   calendar: "calendar-days",
   arrow: "arrow-right",
   chevron: "chevron-right",
@@ -36,8 +34,16 @@ const icons = {
   wallet: "wallet",
   utensils: "utensils",
 };
+const applianceIcons = {
+  fridge:
+    '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 9h14M8 5v1M8 12v4"/>',
+  microwave:
+    '<rect x="2" y="5" width="20" height="14" rx="2"/><rect x="5" y="8" width="10" height="8" rx="1"/><path d="M18 9h1M18 12h1M18 15h1M5 19v2M19 19v2"/>',
+};
 const icon = (name) =>
-  `<i class="fa-solid fa-${icons[name] || "microchip"}" aria-hidden="true"></i>`;
+  applianceIcons[name]
+    ? `<svg class="appliance-icon" data-appliance="${name}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${applianceIcons[name]}</svg>`
+    : `<i class="fa-solid fa-${icons[name] || "microchip"}" aria-hidden="true"></i>`;
 const labels = {
   available: "Available",
   in_use: "In use",

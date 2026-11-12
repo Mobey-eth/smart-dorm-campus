@@ -100,7 +100,20 @@
     @apply flex flex-col items-center justify-center py-1 rounded-xl transition-colors text-slate-700;
     min-height: 48px;
   }
-  .nav-btn i {
+  .appliance-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    vertical-align: -0.125em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .nav-btn i,
+  .nav-btn .appliance-icon {
     @apply text-[17px] mb-1;
   }
   .nav-btn span {
@@ -131,7 +144,8 @@
   .btn.full {
     width: 100%;
   }
-  .btn i {
+  .btn i,
+  .btn .appliance-icon {
     @apply text-xs;
   }
   .icon-btn {
@@ -384,7 +398,8 @@
     width: 100%;
     padding: 13px 14px !important;
   }
-  .nav-btn i {
+  .nav-btn i,
+  .nav-btn .appliance-icon {
     margin-bottom: 0 !important;
     width: 20px;
     text-align: center;
