@@ -6,6 +6,9 @@ execFileSync(process.execPath, ["--check", "dist/app.js"], {
 execFileSync(process.execPath, ["--check", "server/app.js"], {
   stdio: "inherit",
 });
+execFileSync(process.execPath, ["--check", "dist/screen-renderers.js"], {
+  stdio: "inherit",
+});
 console.log(
   "Syntax checks passed. Run npm test for backend integration checks.",
 );

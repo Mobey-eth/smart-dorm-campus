@@ -86,6 +86,7 @@ export function initial(demo = false) {
       pinHash: demo && i === 3 ? hash("4829") : null,
       storedAt: demo ? now - 86 * 3600000 : null,
     })),
+    wallets: {},
     bookings: [],
     alerts: [],
     events: [],
@@ -181,9 +182,11 @@ export function complete(s, b) {
   );
 }
 export function publicState(s, user) {
+  const { wallets, ...visible } = s;
   const admin = user.role === "admin";
   return {
-    ...s,
+    ...visible,
+    walletBalance: wallets?.[user.id] ?? 4500,
     serverTime: Date.now(),
     user,
     simulated: true,

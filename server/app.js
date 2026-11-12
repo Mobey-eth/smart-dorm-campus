@@ -183,6 +183,8 @@ export function createApp({ dbPath = ":memory:", limits = true } = {}) {
             .prepare("SELECT state FROM workspaces WHERE id=?")
             .get(req.session.workspace).state,
         );
+        s.wallets ||= {};
+        s.wallets[req.user.id] ??= 4500;
         settle(s);
         const result = action(s);
         db.prepare("UPDATE workspaces SET state=? WHERE id=?").run(
@@ -203,6 +205,23 @@ export function createApp({ dbPath = ":memory:", limits = true } = {}) {
     res.json({ ok: true });
   });
   route("get", "/state", () => ({}));
+  // Virtual hostel credits only. Amounts and charges are set by the server.
+  function charge(s, userId, amount) {
+    if (s.wallets[userId] < amount)
+      fail("Insufficient wallet balance. Top up on the Home screen.", 409);
+    s.wallets[userId] -= amount;
+  }
+  route("post", "/wallet/topup", (req, s) => {
+    s.wallets[req.user.id] = Math.min(1000000, s.wallets[req.user.id] + 1000);
+    event(
+      s,
+      "Wallet topped up",
+      "₦1,000 in virtual credits added.",
+      req.user.id,
+      "success",
+    );
+    return {};
+  });
   route("post", "/bookings", (req, s) => {
     const { applianceId, duration } = req.body;
     const start = Number(req.body.start);
@@ -252,6 +271,8 @@ export function createApp({ dbPath = ":memory:", limits = true } = {}) {
       duration,
       status: "reserved",
     };
+    booking.charge = { 30: 500, 45: 700, 60: 900 }[duration];
+    charge(s, req.user.id, booking.charge);
     s.bookings.push(booking);
     event(
       s,
@@ -296,6 +317,7 @@ export function createApp({ dbPath = ":memory:", limits = true } = {}) {
             "Only a reservation that has not started can be cancelled.",
             409,
           );
+        s.wallets[b.userId] = (s.wallets[b.userId] ?? 4500) + (b.charge || 0);
         b.status = "cancelled";
         event(s, "Booking cancelled", a.name, b.userId);
         break;
@@ -326,6 +348,7 @@ export function createApp({ dbPath = ":memory:", limits = true } = {}) {
       if (a.status !== "available") fail("Microwave is not available.", 409);
       if (![1, 3, 5].includes(req.body.minutes))
         fail("Choose 1, 3 or 5 minutes.");
+      charge(s, req.user.id, 100);
       a.status = "in_use";
       a.endsAt = Date.now() + req.body.minutes * 60000;
       a.userId = req.user.id;
@@ -354,6 +377,11 @@ export function createApp({ dbPath = ":memory:", limits = true } = {}) {
         fail("Each resident can reserve up to two baskets.");
       if (!/^\d{4,6}$/.test(req.body.pin || ""))
         fail("Choose a PIN with 4–6 digits.");
+      const plan = req.body.plan || "week";
+      if (!["week", "three_days"].includes(plan))
+        fail("Choose a valid storage plan.");
+      charge(s, req.user.id, plan === "week" ? 1500 : 800);
+      b.plan = plan;
       b.ownerId = req.user.id;
       b.pinHash = hash(req.body.pin);
       b.storedAt = null;
@@ -425,9 +453,21 @@ export function createApp({ dbPath = ":memory:", limits = true } = {}) {
         `${b.id} · ${delta > 0 ? "+" : ""}${delta.toFixed(2)} kg · authorized access`,
         req.user.id,
       );
+    } else if (action === "meal") {
+      if (b.weight <= 0)
+        fail("Add food to the basket before logging a meal.", 409);
+      b.storedAt = Date.now();
+      event(
+        s,
+        "New meal logged",
+        `${b.id} · Storage reminder restarted.`,
+        req.user.id,
+        "success",
+      );
     } else if (action === "release") {
       if (b.weight > 0)
         fail("Remove your items before releasing the basket.", 409);
+      b.plan = null;
       b.ownerId = null;
       b.pinHash = null;
       b.locked = true;
@@ -574,13 +614,11 @@ export function createApp({ dbPath = ":memory:", limits = true } = {}) {
   app.use(express.static(resolve("dist")));
   app.use((err, req, res, next) => {
     if (res.headersSent) return next(err);
-    res
-      .status(err.status || 500)
-      .json({
-        error: err.status
-          ? err.message
-          : "Something went wrong. Please try again.",
-      });
+    res.status(err.status || 500).json({
+      error: err.status
+        ? err.message
+        : "Something went wrong. Please try again.",
+    });
     if (!err.status) console.error(err);
   });
   const cleanup = setInterval(() => {

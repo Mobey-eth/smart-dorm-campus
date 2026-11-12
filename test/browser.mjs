@@ -16,10 +16,25 @@ page.on("pageerror", (e) => errors.push(e.message));
 mkdirSync("test-results", { recursive: true });
 try {
   await page.goto(base);
-  await expect(
-    page.getByRole("heading", { name: "Welcome home, Emeka." }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Hi, Emeka/ })).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  expect(
+    await page
+      .locator("body")
+      .evaluate((el) => getComputedStyle(el).fontFamily),
+  ).toContain("Inter");
+  expect(
+    await page
+      .locator(".fa-microchip")
+      .first()
+      .evaluate((el) => getComputedStyle(el).fontFamily),
+  ).toContain("Font Awesome");
+  await expect(page.locator("#wallet-balance")).toHaveText("₦4,500");
   await page.screenshot({ path: "test-results/desktop.png", fullPage: true });
+  await page.getByRole("button", { name: "Top Up", exact: true }).click();
+  await expect(page.locator("#wallet-balance")).toHaveText("₦5,500");
+  await page.reload();
+  await expect(page.locator("#wallet-balance")).toHaveText("₦5,500");
   await page.getByRole("button", { name: "Reset presentation" }).click();
   await page.locator("#reset-pin").fill("wrong");
   await page.getByRole("button", { name: "Confirm reset" }).click();
@@ -47,7 +62,14 @@ try {
   await page.getByRole("button", { name: "Add 250 g" }).click();
   await expect(page.locator(".modal .metric")).toContainText("2.70");
   await page.getByRole("button", { name: "Lock basket", exact: true }).click();
-  await page.getByRole("button", { name: "Plan your next wash" }).click();
+  await page
+    .locator("#sidebar")
+    .getByRole("button", { name: "Laundry", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Book Wash Cycle", exact: true })
+    .first()
+    .click();
   const d = new Date(Date.now() + 3600000);
   await page
     .locator("#start")
@@ -56,42 +78,32 @@ try {
     );
   await page.getByRole("button", { name: "Confirm reservation" }).click();
   await expect(
-    page.getByRole("heading", { name: "Your bookings. All in order." }),
+    page.getByRole("heading", { name: "My Bookings" }),
   ).toBeVisible();
   await expect(
     page.locator("#main").getByText("Reserved", { exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Presentation controls" }).click();
-  await page.getByRole("button", { name: "Finish current wash" }).click();
+  await page.getByRole("button", { name: "Trigger Cycle Alert" }).click();
   await expect(
     page.locator("#main").getByText("Awaiting collection", { exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "I’ve collected my clothes" }).click();
-  await page.getByRole("button", { name: "Presentation controls" }).click();
   await page
     .getByRole("button", { name: "Switch to administrator view" })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Residence management." }),
+    page.getByRole("heading", { name: "Administration" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Bring online" }).click();
-  await page.getByRole("button", { name: "Presentation controls" }).click();
-  await page.getByRole("button", { name: "Simulate weight change" }).click();
+  await page.getByRole("button", { name: "Weight Change" }).click();
   await expect(
     page.getByRole("button", { name: "Mark reviewed" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Mark reviewed" }).click();
-  await page.getByRole("button", { name: "Presentation controls" }).click();
   await page.getByRole("button", { name: "Switch to resident view" }).click();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: "test-results/mobile.png", fullPage: true });
-  for (const tab of [
-    "Overview",
-    "Refrigerator",
-    "Microwaves",
-    "Laundry",
-    "My bookings",
-  ]) {
+  for (const tab of ["Home", "Fridge", "Microwave", "Laundry"]) {
     await page
       .locator("nav")
       .getByRole("button", { name: tab, exact: true })
@@ -104,16 +116,14 @@ try {
   }
   await page
     .locator("nav")
-    .getByRole("button", { name: "Overview", exact: true })
+    .getByRole("button", { name: "Home", exact: true })
     .click();
   await page.getByRole("button", { name: "Reset presentation" }).click();
   await page
     .locator("#reset-pin")
     .fill(process.env.TEST_RESET_PIN || "test-reset-pin");
   await page.getByRole("button", { name: "Confirm reset" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Welcome home, Emeka." }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Hi, Emeka/ })).toBeVisible();
   await expect(page.locator(".modal")).toHaveCount(0);
   await page.getByRole("button", { name: "Your account" }).click();
   await page
@@ -125,11 +135,11 @@ try {
     .getByRole("button", { name: "Create account", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: /Welcome home, browser_/ }),
+    page.getByRole("heading", { name: /^Hi, browser_/ }),
   ).toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: /Welcome home, browser_/ }),
+    page.getByRole("heading", { name: /^Hi, browser_/ }),
   ).toBeVisible();
   expect(errors).toEqual([]);
   console.log(

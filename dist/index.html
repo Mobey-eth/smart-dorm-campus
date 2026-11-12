@@ -2,41 +2,98 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#102f3b" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0F172A" />
+    <title>IPES SmartHub | Hostel Services Dashboard</title>
     <meta
       name="description"
-      content="Smartdorm by IPES. Your shared kitchen, laundry and secure refrigerator baskets, in one connected dashboard."
+      content="Your hostel essentials, connected. Secure fridge baskets, microwave availability and laundry bookings in one dashboard."
     />
-    <title>Smartdorm · Your everyday, connected</title>
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
+  <body class="studio-bg min-h-screen">
     <a class="skip" href="#main">Skip to content</a>
-    <aside class="sidebar" id="sidebar"></aside>
-    <div class="shell">
-      <header class="topbar">
-        <div class="breadcrumb">
-          IPES Residence <span>/</span> <strong id="crumb">Overview</strong>
-        </div>
-        <div class="top-actions" id="top-actions"></div>
-      </header>
-      <main id="main" tabindex="-1">
-        <div class="loading">
-          <span class="logo">s<span>·</span></span>
-          <h1>Making yourself at home.</h1>
-          <p>Connecting to Smartdorm…</p>
-        </div>
-      </main>
-      <footer>
-        Shared spaces. Better everyday.<span
-          >SMARTDORM <i>●</i> IPES RESIDENCE</span
+    <header
+      class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90"
+    >
+      <div
+        class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center gap-3"
+      >
+        <a
+          href="#home"
+          class="flex items-center gap-3 min-w-0"
+          aria-label="IPES SmartHub home"
         >
-      </footer>
+          <div
+            class="w-10 h-10 rounded-2xl bg-slate-900 text-emerald-400 flex items-center justify-center shadow-sm shrink-0"
+          >
+            <i class="fa-solid fa-microchip text-lg" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h1
+              class="text-base sm:text-lg font-extrabold tracking-tight leading-none"
+            >
+              IPES <span class="text-blue-600">SmartHub</span>
+            </h1>
+            <p class="hidden sm:block text-[11px] text-slate-500 mt-1">
+              Your hostel essentials, connected.
+            </p>
+          </div>
+        </a>
+        <div
+          id="top-actions"
+          class="ml-auto flex items-center gap-2 sm:gap-3"
+        ></div>
+      </div>
+    </header>
+    <div
+      class="max-w-[1500px] mx-auto w-full px-0 md:px-6 lg:px-8 py-0 md:py-6 flex items-start gap-5 lg:gap-6"
+    >
+      <div class="flex-1 min-w-0">
+        <div
+          id="dashboard-shell"
+          class="relative w-full min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-120px)] flex flex-col md:flex-row md:gap-5"
+        >
+          <main
+            id="main"
+            tabindex="-1"
+            class="order-1 md:order-2 flex-1 min-w-0 pb-28 md:pb-10"
+          >
+            <div class="loading">
+              <i
+                class="fa-solid fa-microchip text-3xl text-blue-600"
+                aria-hidden="true"
+              ></i>
+              <h2>Connecting to your hostel…</h2>
+            </div>
+          </main>
+          <nav
+            id="sidebar"
+            aria-label="Main navigation"
+            class="order-2 md:order-1 fixed md:sticky bottom-0 md:bottom-auto md:top-24 left-0 right-0 md:left-auto md:right-auto w-full md:w-[190px] lg:w-[210px] shrink-0 self-start bg-white/95 backdrop-blur-md border-t md:border border-slate-200/90 px-3 pt-2 pb-4 md:p-3 md:rounded-3xl md:shadow-card z-30"
+          ></nav>
+        </div>
+      </div>
+      <aside
+        id="hub-panel"
+        class="hidden lg:flex flex-col w-[300px] xl:w-[320px] shrink-0 sticky top-24 bg-white/95 backdrop-blur-md rounded-3xl border border-slate-200/90 shadow-card p-5 gap-5 max-h-[calc(100vh-120px)] overflow-y-auto content-scroll"
+        aria-label="Hub controls"
+      ></aside>
     </div>
+    <button
+      id="mobile-controls"
+      data-action="controls"
+      aria-label="Presentation controls"
+      class="lg:hidden fixed bottom-24 md:bottom-5 right-4 z-40 bg-slate-900 text-white text-xs font-bold px-3.5 py-2.5 rounded-full shadow-xl border border-slate-700 flex items-center gap-2"
+    >
+      <i class="fa-solid fa-sliders text-emerald-400" aria-hidden="true"></i>
+      Hub controls
+    </button>
     <div id="modal-root"></div>
     <div id="toast" role="status" aria-live="polite"></div>
     <script src="app.js" defer></script>
+    <script src="screen-renderers.js" defer></script>
   </body>
 </html>

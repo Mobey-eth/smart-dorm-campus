@@ -7,36 +7,37 @@ const esc = (v) =>
         c
       ],
   );
-const paths = {
-  home: "M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z",
-  fridge: "M5 3h14v18H5z M5 10h14 M8 6v2 M8 13v4",
-  washer:
-    "M4 3h16v18H4z M4 7h16 M7 5h1 M17 5h0 M16 14a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M9 14q3-3 6 0",
-  microwave: "M3 6h18v13H3z M6 9h10v7H6z M19 10h0 M19 14v2",
-  calendar: "M4 5h16v16H4z M8 3v4 M16 3v4 M4 10h16 M8 14h2 M14 14h2 M8 17h2",
-  arrow: "M5 12h14 M13 6l6 6-6 6",
-  chevron: "m9 5 7 7-7 7",
-  bell: "M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9 M10 21h4",
-  sliders: "M4 6h16 M4 12h16 M4 18h16 M8 4v4 M16 10v4 M9 16v4",
-  building: "M4 21V5h10v16 M14 10h6v11 M8 8h2 M8 12h2 M8 16h2 M2 21h20",
-  lock: "M6 10h12v11H6z M8 10V6a4 4 0 0 1 8 0v4 M12 14v3",
-  unlock: "M6 10h12v11H6z M8 10V6a4 4 0 0 1 8 0 M12 14v3",
-  check: "m5 12 4 4L19 6",
-  clock: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0 M12 7v5l3 2",
-  wifi: "M3 8a14 14 0 0 1 18 0 M6 12a9 9 0 0 1 12 0 M9 16a4 4 0 0 1 6 0 M12 20h0",
-  shield: "m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6z M8 12l3 3 5-6",
-  close: "m6 6 12 12 M6 18 18 6",
-  logout: "M9 4H4v16h5 M9 12h12 M17 8l4 4-4 4",
-  plus: "M12 5v14 M5 12h14",
-  minus: "M5 12h14",
-  alert: "m12 3 10 18H2z M12 9v5 M12 18h0",
-  reset: "M3 11a9 9 0 1 1 2 7 M3 4v7h7",
-  user: "M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M4 21v-3c0-6 16-6 16 0v3",
-  weight: "M4 8h16l2 13H2z M9 8V5a3 3 0 0 1 6 0v3",
-  spark: "m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z",
+const icons = {
+  home: "house",
+  fridge: "snowflake",
+  washer: "shirt",
+  microwave: "fire-burner",
+  calendar: "calendar-days",
+  arrow: "arrow-right",
+  chevron: "chevron-right",
+  bell: "bell",
+  sliders: "sliders",
+  building: "building",
+  lock: "lock",
+  unlock: "lock-open",
+  check: "circle-check",
+  clock: "clock",
+  wifi: "wifi",
+  shield: "shield-halved",
+  close: "xmark",
+  logout: "right-from-bracket",
+  plus: "plus",
+  minus: "minus",
+  alert: "triangle-exclamation",
+  reset: "rotate-left",
+  user: "user",
+  weight: "weight-scale",
+  spark: "microchip",
+  wallet: "wallet",
+  utensils: "utensils",
 };
 const icon = (name) =>
-  `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="${paths[name] || paths.home}"/></svg>`;
+  `<i class="fa-solid fa-${icons[name] || "microchip"}" aria-hidden="true"></i>`;
 const labels = {
   available: "Available",
   in_use: "In use",
@@ -158,167 +159,6 @@ function nav(tab) {
   render();
   window.scrollTo({ top: 0, behavior: "instant" });
 }
-function header(title, subtitle, action = "") {
-  return `<div class="page-head"><div><h1>${title}</h1><p>${subtitle}</p></div>${action}</div>`;
-}
-function renderChrome() {
-  const user = state.user;
-  const tabs = [
-    ["home", "home", "Overview"],
-    ["fridge", "fridge", "Refrigerator"],
-    ["microwave", "microwave", "Microwaves"],
-    ["laundry", "washer", "Laundry"],
-    ["bookings", "calendar", "My bookings"],
-  ];
-  $("#sidebar").innerHTML =
-    `<a class="brand" href="#home"><span class="logo">s<span>·</span></span>smartdorm<sup>IPES</sup></a><div class="residence">${icon("building")}<div>IPES Residence<small>Block A · Shared utilities</small></div></div><div class="nav-label">Your everyday</div><nav>${tabs.map(([key, ico, label]) => `<button class="nav-btn ${page === key ? "active" : ""}" data-action="nav" data-id="${key}" ${page === key ? 'aria-current="page"' : ""}>${icon(ico)}<span>${label}</span></button>`).join("")}${user.role === "admin" ? `<div class="nav-separator"></div><button class="nav-btn nav-admin ${page === "admin" ? "active" : ""}" data-action="nav" data-id="admin">${icon("shield")}<span>Administration</span></button>` : ""}</nav><div class="sidebar-bottom"><div class="connection"><span class="dot" style="color:var(--teal)"></span>${offline ? "Reconnecting to residence" : "Your residence is connected"}<small>Kitchen. Laundry. One less thing to worry about.</small></div><div class="profile"><span class="avatar">${esc(user.username.slice(0, 2).toUpperCase())}</span><div><strong>${esc(user.username)}</strong><small>${user.role === "admin" ? "Administrator" : "Resident"} · Block A</small></div><button class="icon-btn" data-action="account" aria-label="Account options">${icon("logout")}</button></div></div>`;
-  $("#crumb").textContent =
-    {
-      home: "Overview",
-      fridge: "Refrigerator",
-      laundry: "Laundry",
-      microwave: "Microwaves",
-      bookings: "My bookings",
-      admin: "Administration",
-      activity: "Activity",
-    }[page] || "Overview";
-  $("#top-actions").innerHTML =
-    `${state.user.role === "admin" ? `<button class="icon-btn" data-action="nav" data-id="admin" aria-label="Administration">${icon("shield")}</button>` : ""}${state.user.demo ? '<span class="badge demo"><i class="dot"></i>DEMO MODE</span>' : '<span class="badge available">Sensor simulation</span>'}<button class="icon-btn" data-action="activity" aria-label="Notifications">${icon("bell")}${state.alerts.filter((a) => !a.resolved).length ? `<span class="count">${state.alerts.filter((a) => !a.resolved).length}</span>` : ""}</button>${state.user.demo ? `<button class="btn small" data-action="controls" aria-label="Presentation controls">${icon("sliders")}<span>Controls</span></button>` : ""}<button class="icon-btn" data-action="account" aria-label="Your account"><span class="avatar">${esc(user.username.slice(0, 2).toUpperCase())}</span>${icon("user")}</button>`;
-}
-function activityRows(limit = 5) {
-  return state.events.length
-    ? state.events
-        .slice(0, limit)
-        .map(
-          (e) =>
-            `<div class="activity-row"><span class="event-icon">${icon(e.type === "warning" ? "alert" : e.title.includes("asket") ? "lock" : e.title.includes("ash") ? "washer" : "check")}</span><div class="activity-copy"><strong>${esc(e.title)}</strong><p>${esc(e.detail)}</p></div><time>${timeAgo(e.at)}</time></div>`,
-        )
-        .join("")
-    : empty("Your updates will appear here.");
-}
-function basketSummary() {
-  const b = myBaskets()[0];
-  return `<section><div class="section-head"><h2>Your refrigerator space</h2>${go("View baskets", "fridge")}</div><div class="card">${b ? `<div class="row between"><h3>A little space, just for you.</h3>${badge(b.locked ? "available" : "warning", b.locked ? "Secured" : "Unlocked")}</div><div class="basket-preview"><div class="basket-drawing"></div><div><h3>Basket ${b.id}</h3><p>Refrigerator ${b.unit} · Individual PIN lock</p></div></div><div class="info-pair"><span class="muted">Current weight</span><strong>${b.weight.toFixed(2)} kg <span class="muted">/ 10 kg</span></strong></div><div class="card-actions">${btn(b.locked ? "Unlock basket" : "Manage basket", "basket", b.id, "primary", "lock")}${btn("View details", "basket", b.id)}</div>` : empty("Your own secure space for the essentials.", btn("Find a basket", "nav", "fridge", "primary"))}</div></section>`;
-}
-function bookingSummary() {
-  const b = myBookings().find((b) => b.status === "running") || myBookings()[0];
-  return `<section><div class="section-head"><h2>Your laundry</h2>${go("All bookings", "bookings")}</div><div class="card">${b ? `<div class="row between"><h3>${b.applianceId} · ${b.duration} min cycle</h3>${badge(b.status)}</div><div class="booking-summary"><span class="service-icon washer">${icon("washer")}</span><div>${b.status === "running" ? `<div class="timer">${timer(b.end)}</div><small>remaining in this cycle</small>` : `<h3>${b.status === "reserved" ? dateTime(b.start) : "Ready when you are."}</h3><p class="hint">${b.status === "reserved" ? "Your time is saved." : "Your wash is complete. Please collect your clothes."}</p>`}</div></div><div class="progress"><div style="width:${b.status === "running" ? Math.max(0, Math.min(100, 100 * (1 - (b.end - now()) / (b.duration * 60000)))) : b.status === "reserved" ? 0 : 100}%"></div></div><div class="notice">${icon("bell")} ${b.status === "running" ? "We’ll let you know here when your clothes are ready." : b.status === "reserved" ? "Start the machine when your reserved time arrives." : "The washer stays occupied until you confirm collection."}</div>${bookingActions(b)}` : empty("Make laundry fit your day.", btn("Book a wash", "book", "WM-01", "primary", "calendar"))}</div></section>`;
-}
-function home() {
-  const free = state.baskets.filter((b) => !b.ownerId).length,
-    mw = state.appliances.filter((a) => a.kind === "microwave"),
-    wm = state.appliances.filter((a) => a.kind === "washer");
-  return `${header(`Welcome home, ${esc(state.user.username)}.`, "A little less waiting. A little more living.", `<div class="date-label">${icon("calendar")}${new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</div>`)}<section class="hero"><div class="hero-copy"><div class="eyebrow">Your everyday, connected</div><h2>A smarter space.<br><em>A simpler student life.</em></h2><p>Your kitchen, laundry and food storage. All in one place, all at your fingertips.</p>${btn("Plan your next wash", "book", "WM-01", "", "arrow")}</div><div class="hero-art" aria-hidden="true"><span class="art-signal">${icon("wifi")}</span><div class="mini-fridge"></div><div class="mini-micro"></div><div class="mini-washer"></div></div></section><div class="section-head"><h2>Around your residence</h2><span class="live"><i class="dot"></i>Live availability</span></div><div class="services">${[
-    [
-      "fridge",
-      "Refrigerator",
-      "Secure, personal basket storage",
-      free,
-      "baskets available",
-      "12 individual baskets",
-      "Find your space",
-    ],
-    [
-      "microwave",
-      "Microwaves",
-      "Check before you head downstairs",
-      mw.filter((a) => a.status === "available").length,
-      "ready to use",
-      "Communal kitchen",
-      "View microwaves",
-    ],
-    [
-      "washer",
-      "Laundry",
-      "A wash that works with your schedule",
-      wm.filter((a) => a.status === "available").length,
-      "washers available",
-      "Book up to 7 days ahead",
-      "Book a wash",
-    ],
-  ]
-    .map(
-      ([kind, name, sub, n, metric, foot, cta]) =>
-        `<article class="service"><div class="service-body"><div class="row between"><span class="service-icon ${kind}">${icon(kind)}</span>${badge(n ? "available" : "warning", n ? "Space available" : "Check status")}</div><h3>${name}</h3><p class="caption">${sub}</p><div class="metric">${n}<span>${metric}</span></div></div><div class="service-footer"><small>${foot}</small>${go(cta, kind === "washer" ? "laundry" : kind)}</div></article>`,
-    )
-    .join(
-      "",
-    )}</div><div class="two-col">${basketSummary()}${bookingSummary()}</div><section><div class="section-head"><h2>Recent activity</h2>${go("View all", "activity")}</div><div class="card activity">${activityRows(4)}</div></section>${state.user.demo ? `<div class="reset-home">${btn("Reset presentation", "reset-confirm", "", "", "reset")}</div>` : ""}`;
-}
-function fridge() {
-  const list = state.baskets.filter((b) => b.unit === unit);
-  return `${header("Your food. Your space.", "A shared refrigerator, with a secure basket just for you.", badge("available", "4.0°C · Simulated"))}<div class="notice">${icon("fridge")}The double doors open normally. Each basket inside has its own PIN lock and weight sensor.</div><div class="row between"><div class="filter">${["A", "B"].map((u) => `<button class="${u === unit ? "active" : ""}" data-action="unit" data-id="${u}">Refrigerator ${u}</button>`).join("")}</div><small>${list.filter((b) => !b.ownerId).length} of 6 available</small></div><div class="legend"><span><i class="dot" style="color:var(--teal)"></i>Your basket</span><span>Available</span><span>Occupied</span></div><div class="basket-grid">${list.map((b) => `<button class="basket-card ${b.mine ? "mine" : b.ownerId ? "occupied" : ""}" data-action="basket" data-id="${b.id}"><div class="row between">${icon(b.locked ? "lock" : "unlock")}${badge(b.mine ? "available" : b.ownerId ? "offline" : "available", b.mine ? "Your basket" : b.ownerId ? "Occupied" : "Available")}</div><div class="basket-drawing" data-id="${b.id}"></div><h3>Basket ${b.id}</h3><p>${b.mine ? `${b.weight.toFixed(2)} kg · ${b.locked ? "Locked" : "Unlocked"}` : b.ownerId ? "Assigned to another resident" : "Choose a PIN and reserve"}</p></button>`).join("")}</div><div class="notice">${icon("shield")}Weight readings help you keep track of changes. They do not establish who accessed an item or prove theft.</div>`;
-}
-function bookingActions(b) {
-  return `<div class="card-actions">${b.status === "reserved" ? `${btn("Start wash", "booking-start", b.id, "primary", "washer")}${btn("Cancel", "booking-cancel", b.id)}` : b.status === "awaiting_collection" ? btn("I’ve collected my clothes", "booking-collect", b.id, "primary", "check") : btn("View booking", "nav", "bookings", "", "calendar")}</div>`;
-}
-function appliances(kind) {
-  const laundry = kind === "washer";
-  const list = state.appliances.filter((a) => a.kind === kind);
-  return `${header(laundry ? "Laundry, on your time." : "A warm meal, without the wait.", laundry ? "Reserve a time, start your wash, and get on with your day." : "Check real-time availability before heading to the kitchen.")}<div class="appliance-grid">${list
-    .map((a) => {
-      const active = state.bookings.find(
-        (b) =>
-          b.applianceId === a.id &&
-          ["running", "awaiting_collection"].includes(b.status),
-      );
-      return `<article class="card"><div class="row between"><div><h3>${a.name}</h3><p class="hint">${a.location}</p></div>${badge(a.status)}</div><div class="machine-visual ${a.status === "offline" ? "offline" : ""}" aria-hidden="true"><div class="${laundry ? "mini-washer" : "mini-micro"}"></div></div><div class="status-line"><span class="muted">${a.status === "offline" ? "Temporarily unavailable" : a.status === "awaiting_collection" ? "Cycle finished · clothes still inside" : a.status === "running" || a.status === "in_use" ? "Cycle in progress" : "Ready for your next load"}</span>${a.endsAt ? timer(a.endsAt) : active?.status === "running" ? timer(active.end) : ""}</div>${laundry ? `${a.status !== "offline" ? btn("Reserve a time slot", "book", a.id, "primary full", "calendar") : ""}${active?.mine ? `<div style="margin-top:10px">${bookingActions(active)}</div>` : ""}` : a.status === "available" ? btn("Start heating", "heat", a.id, "primary full", "microwave") : a.userId === state.user.id ? btn("End heating", "microwave-stop", a.id, "full") : ""}</article>`;
-    })
-    .join(
-      "",
-    )}</div><div class="notice">${icon(laundry ? "bell" : "wifi")}${laundry ? "Completion notifications appear here while the app is open. Completed cycles remain occupied until clothes are collected." : "Appliance readings refresh automatically. Heating actions currently use simulated sensors."}</div>`;
-}
-function bookings() {
-  const list = state.bookings
-    .filter((b) => b.mine && (filter === "all" || b.status === filter))
-    .sort((a, b) => b.start - a.start);
-  return `${header("Your bookings. All in order.", "A little planning makes shared living easier.", btn("New booking", "book", "WM-01", "primary", "plus"))}<div class="filter">${[
-    ["all", "All bookings"],
-    ["reserved", "Upcoming"],
-    ["running", "In progress"],
-  ]
-    .map(
-      ([key, label]) =>
-        `<button class="${filter === key ? "active" : ""}" data-action="filter" data-id="${key}">${label}</button>`,
-    )
-    .join(
-      "",
-    )}</div><div class="stack">${list.length ? list.map((b) => `<article class="card booking-row"><span class="service-icon washer">${icon("washer")}</span><div class="details"><h3>${b.applianceId} · ${b.duration} minute wash</h3><p>${dateTime(b.start)} – ${new Date(b.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p><p>${badge(b.status)} ${b.status === "running" ? timer(b.end) : ""}</p></div>${["reserved", "awaiting_collection"].includes(b.status) ? bookingActions(b) : ""}</article>`).join("") : empty("No bookings here yet.", btn("Reserve a washer", "book", "WM-01", "primary"))}</div>`;
-}
-function activity() {
-  return `${header("Everything, up to date.", "Appliance updates, basket access and important reminders.")}<div class="stack">${state.alerts.map((a) => `<div class="notice warning">${icon("alert")}<div><strong>${a.resolved ? "Reviewed" : "Weight change to review"}</strong><p>${esc(a.detail)}</p>${state.user.role === "admin" && !a.resolved ? btn("Mark reviewed", "resolve", a.id, "small") : ""}</div></div>`).join("")}</div><div class="card activity">${activityRows(100)}</div>`;
-}
-function adminView() {
-  if (state.user.role !== "admin")
-    return empty("Administrator access is required.");
-  return `${header("Residence management.", "Keep shared spaces running smoothly.", badge("available", "Administrator"))}<div class="two-col"><section><div class="section-head"><h2>Appliances</h2></div><div class="card">${state.appliances.map((a) => `<div class="admin-row"><div><strong>${a.name}</strong><small>${labels[a.status]}</small></div>${["available", "offline"].includes(a.status) ? btn(a.status === "offline" ? "Bring online" : "Take offline", "toggle-appliance", a.id, "small") : badge(a.status)}</div>`).join("")}</div></section><section><div class="section-head"><h2>Basket assignments</h2></div><div class="card">${state.baskets.map((b) => `<div class="admin-row"><div><strong>${b.id} · Refrigerator ${b.unit}</strong><small>${b.ownerId ? (b.mine ? "Emeka / current resident" : "Assigned") : "Available"} · ${b.weight.toFixed(2)} kg</small></div>${btn("Manage", "assign", b.id, "small")}</div>`).join("")}</div></section></div><div class="section-head"><h2>Active reservations</h2></div><div class="stack">${
-    state.bookings
-      .filter((b) =>
-        ["reserved", "running", "awaiting_collection"].includes(b.status),
-      )
-      .map(
-        (b) =>
-          `<div class="card booking-row"><div class="details"><h3>${b.applianceId} · ${dateTime(b.start)}</h3><p>${badge(b.status)}</p></div>${b.status === "running" ? "<small>Cycle in progress</small>" : bookingActions(b)}</div>`,
-      )
-      .join("") || empty("No active reservations.")
-  }</div><div style="margin-top:25px">${activity()}</div>`;
-}
-function render() {
-  if (!state) return;
-  renderChrome();
-  const views = {
-    home,
-    fridge,
-    microwave: () => appliances("microwave"),
-    laundry: () => appliances("washer"),
-    bookings,
-    activity,
-    admin: adminView,
-  };
-  if (!views[page]) page = "home";
-  $("#main").innerHTML =
-    `${offline ? '<div class="network-banner">Connection interrupted. Showing the last saved status; reconnecting…</div>' : ""}${views[page]()}`;
-}
 function modal(title, content, kind = null, id = null) {
   lastFocus = document.activeElement;
   modalKind = kind;
@@ -347,8 +187,8 @@ function openBasket(id) {
   }
   if (!b.ownerId) {
     modal(
-      `Make ${b.id} yours.`,
-      `<p>Refrigerator ${b.unit} · Create a private PIN for your basket.</p><form id="reserve-form" data-id="${id}"><label for="pin">Choose a 4–6 digit PIN</label><input id="pin" class="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" maxlength="6" autocomplete="new-password" required><p class="hint">Remember this PIN. You’ll need it each time you unlock your basket.</p>${errorBox}<button class="btn primary full">Reserve basket</button></form>`,
+      `Reserve Basket #${b.id}`,
+      `<p>Refrigerator ${b.unit} · Create a private PIN for your basket.</p><form id="reserve-form" data-id="${id}"><div class="space-y-2.5"><label class="choice"><div class="flex items-center gap-3"><input type="radio" name="plan" value="week" checked><div><strong>Full Week (Sun–Sat)</strong><small>7-day storage plan</small></div></div><strong>₦1,500</strong></label><label class="choice"><div class="flex items-center gap-3"><input type="radio" name="plan" value="three_days"><div><strong>3-Day Express Pass</strong><small>Short-stay storage</small></div></div><strong>₦800</strong></label></div><label for="pin">Choose a 4–6 digit PIN</label><input id="pin" class="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" maxlength="6" autocomplete="new-password" required><p class="hint">Remember this PIN. You’ll need it each time you unlock your basket.</p>${errorBox}<button class="btn primary full">Reserve basket</button></form>`,
     );
     return;
   }
@@ -373,7 +213,7 @@ function openBook(id) {
     .toISOString()
     .slice(0, 16);
   modal(
-    "Make time for a fresh start.",
+    "Book a Laundry Cycle",
     `<p>Choose your washer, time and cycle. Reservations are checked automatically for conflicts.</p><form id="book-form"><label for="machine">Washing machine</label><select name="applianceId" id="machine">${state.appliances
       .filter((a) => a.kind === "washer" && a.status !== "offline")
       .map(
@@ -382,7 +222,7 @@ function openBook(id) {
       )
       .join(
         "",
-      )}</select><label for="start">Start time</label><input type="datetime-local" id="start" name="start" value="${local}" min="${local}" required><label for="duration">Wash cycle</label><select name="duration" id="duration"><option value="30">Quick wash · 30 minutes</option><option value="45">Everyday wash · 45 minutes</option><option value="60">Heavy load · 60 minutes</option></select><div id="slot-list" class="hint"></div>${errorBox}<button class="btn primary full">Confirm reservation ${icon("arrow")}</button></form>`,
+      )}</select><label for="start">Start time</label><input type="datetime-local" id="start" name="start" value="${local}" min="${local}" required><label for="duration">Wash cycle</label><select name="duration" id="duration"><option value="30">Quick Wash · 30 min · ₦500</option><option value="45">Heavy Duty · 45 min · ₦700</option><option value="60">Full Load · 60 min · ₦900</option></select><div id="slot-list" class="hint"></div>${errorBox}<button class="btn primary full">Confirm reservation ${icon("arrow")}</button></form>`,
   );
   updateSlots();
 }
@@ -433,12 +273,28 @@ function controls() {
 }
 function account(mode = "login") {
   modal(
-    mode === "register" ? "Welcome to your residence." : "Good to see you.",
+    mode === "register" ? "Create an account" : "Sign in to SmartHub",
     `<p>${mode === "register" ? "Create an account with a made-up username. No email, full name or personal details needed." : "Sign in to manage your baskets and bookings."}</p><form id="auth-form" data-mode="${mode}"><label for="username">Username</label><input id="username" name="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]+" autocomplete="username" required><label for="password">Password</label><input id="password" name="password" type="password" minlength="10" maxlength="128" autocomplete="${mode === "register" ? "new-password" : "current-password"}" required><p class="hint">Use at least 10 characters. For this presentation, choose a password you don’t use elsewhere.</p>${errorBox}<button class="btn primary full">${mode === "register" ? "Create account" : "Sign in"}</button></form><div style="margin-top:17px;text-align:center"><button class="text-btn" data-action="auth-mode" data-id="${mode === "register" ? "login" : "register"}">${mode === "register" ? "Already have an account? Sign in" : "New here? Create an account"}</button></div>${!state?.user.demo ? `<div class="card-actions" style="margin-top:18px">${btn("Sign out", "logout", "", "small")}</div>` : ""}`,
   );
 }
 async function handleAction(action, id) {
   switch (action) {
+    case "topup":
+      await mutate(
+        "/wallet/topup",
+        {},
+        "POST",
+        "₦1,000 in virtual credits added to your wallet.",
+      );
+      break;
+    case "meal":
+      await mutate(
+        `/baskets/${id}/meal`,
+        {},
+        "POST",
+        "Storage reminder reset for your new meal.",
+      );
+      break;
     case "nav":
       nav(id);
       break;
@@ -473,8 +329,8 @@ async function handleAction(action, id) {
       break;
     case "heat":
       modal(
-        "Warm up your day.",
-        `<p>${id} · Choose a heating duration.</p><form id="heat-form" data-id="${id}"><label for="minutes">Heating time</label><select name="minutes" id="minutes"><option value="1">1 minute</option><option value="3" selected>3 minutes</option><option value="5">5 minutes</option></select>${errorBox}<button class="btn primary full">Start heating</button></form>`,
+        "Start Microwave",
+        `<p>${id} · Choose a heating duration · ₦100 per session.</p><form id="heat-form" data-id="${id}"><label for="minutes">Heating time</label><select name="minutes" id="minutes"><option value="1">1 minute</option><option value="3" selected>3 minutes</option><option value="5">5 minutes</option></select>${errorBox}<button class="btn primary full">Start heating</button></form>`,
       );
       break;
     case "microwave-stop":
@@ -756,7 +612,7 @@ async function boot() {
       return boot();
     }
     $("#main").innerHTML =
-      `<div class="loading"><span class="logo">s<span>·</span></span><h1>Let’s reconnect.</h1><p>${esc(e.message)}</p>${btn("Try again", "retry", "", "primary")}</div>`;
+      `<div class="loading"><i class="fa-solid fa-microchip text-3xl text-blue-600" aria-hidden="true"></i><h2>Reconnecting to SmartHub</h2><p>${esc(e.message)}</p>${btn("Try again", "retry", "", "primary")}</div>`;
   }
 }
 setInterval(() => {
@@ -793,4 +649,3 @@ setInterval(async () => {
     }
   }
 }, 4000);
-boot();

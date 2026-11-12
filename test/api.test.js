@@ -25,13 +25,11 @@ test("accounts persist, passwords and session tokens are hashed, roles cannot be
   let i = createApp({ dbPath: join(dir, "db.sqlite"), limits: false });
   try {
     const api = request(i.app);
-    const res = await api
-      .post("/api/auth/register")
-      .send({
-        username: "resident_one",
-        password: "long-password-123",
-        role: "admin",
-      });
+    const res = await api.post("/api/auth/register").send({
+      username: "resident_one",
+      password: "long-password-123",
+      role: "admin",
+    });
     assert.equal(res.status, 201);
     const user = i.db.prepare("SELECT * FROM users").get();
     assert.equal(user.role, "student");
@@ -325,6 +323,72 @@ test("timers settle on server after clients close, including auto lock", async (
     assert.equal(r.body.state.bookings[0].status, "awaiting_collection");
     assert.equal(r.body.state.baskets[3].locked, true);
     assert.equal(r.body.state.appliances[1].status, "available");
+  } finally {
+    close();
+  }
+});
+
+test("virtual wallet persists, charges are server set, and cancellations refund only once", async () => {
+  const { api, close } = setup();
+  try {
+    const token = await register(api, "wallet_student");
+    assert.equal(
+      (await api.get("/api/state").set(auth(token))).body.state.walletBalance,
+      4500,
+    );
+    let r = await api
+      .post("/api/wallet/topup")
+      .set(auth(token))
+      .send({ amount: 999999 });
+    assert.equal(r.body.state.walletBalance, 5500);
+    const payload = {
+      applianceId: "WM-01",
+      duration: 30,
+      start: Date.now() + 3600000,
+    };
+    r = await api
+      .post("/api/bookings")
+      .set(auth(token))
+      .send({ ...payload, charge: 0 });
+    assert.equal(r.body.state.walletBalance, 5000);
+    const id = r.body.booking.id;
+    assert.equal(
+      (await api.post("/api/bookings").set(auth(token)).send(payload)).status,
+      409,
+    );
+    assert.equal(
+      (await api.get("/api/state").set(auth(token))).body.state.walletBalance,
+      5000,
+    );
+    r = await api
+      .patch(`/api/bookings/${id}`)
+      .set(auth(token))
+      .send({ action: "cancel" });
+    assert.equal(r.body.state.walletBalance, 5500);
+    assert.equal(
+      (
+        await api
+          .patch(`/api/bookings/${id}`)
+          .set(auth(token))
+          .send({ action: "cancel" })
+      ).status,
+      409,
+    );
+    r = await api
+      .post("/api/baskets/B-02/reserve")
+      .set(auth(token))
+      .send({ pin: "5678", plan: "three_days", price: 0 });
+    assert.equal(r.body.state.walletBalance, 4700);
+    assert.equal(
+      r.body.state.baskets.find((b) => b.id === "B-02").plan,
+      "three_days",
+    );
+    assert.equal(r.body.state.wallets, undefined);
+    const other = await register(api, "wallet_other");
+    assert.equal(
+      (await api.get("/api/state").set(auth(other))).body.state.walletBalance,
+      4500,
+    );
   } finally {
     close();
   }

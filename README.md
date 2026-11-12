@@ -1,6 +1,6 @@
-# Smartdorm · IPES Residence
+# IPES SmartHub · Smartdorm
 
-A mobile-first shared-utility dashboard with an Express API and persistent SQLite database. The frontend stays on Netlify; the API runs at **https://api-ipes.chimaobi.xyz**.
+The supplied IPES SmartHub design, with Inter, Font Awesome icons, navy panels, blue controls and the naira wallet. A mobile-first shared-utility dashboard with an Express API and persistent SQLite database. The frontend stays on Netlify; the API runs at **https://api-ipes.chimaobi.xyz**.
 
 ## Run locally
 
@@ -15,8 +15,13 @@ node --env-file=.env server/index.js
 
 Open http://127.0.0.1:3015. `npm start` also works when variables are already in the environment. The backend serves `dist/` for development. Netlify serves the same files in production and proxies `/api/*` to the API (see `netlify.toml`).
 
+## Frontend design
+
+`dist/index.html` follows the supplied responsive shell: sticky IPES SmartHub header, four primary tabs, desktop controls panel and a mobile controls drawer. `dist/screen-renderers.js` renders the supplied screen layouts using API data. Edit `src/style.css` and run `npm run build` to regenerate Tailwind CSS. Inter and Font Awesome 6.5.1 are served locally from `dist/vendor/`, with their licenses; no CDN scripts are needed.
+
 ## Using the application
 
+- The naira wallet starts at ₦4,500 in virtual credits. Top Up adds ₦1,000 immediately. Basket plans cost ₦1,500 / ₦800, washes cost ₦500 / ₦700 / ₦900, and a microwave session costs ₦100. Charges are set and persisted by the API; cancelling an unstarted wash refunds its charge. No real payment is collected.
 - The shared presentation opens without signing up. All visitors act as the same mock resident, Emeka. Changes are visible to everyone trying the presentation; admin/resident view is session-specific.
 - Presentation controls simulate wash completion, storage time and unusual weight readings. One small Demo Mode indicator identifies the presentation. All appliance data is simulated, including for registered accounts.
 - The reset control is centered at the bottom of Overview. It requires the server-configured confirmation PIN. Reset restores only the shared presentation; account records are preserved.
@@ -80,11 +85,13 @@ curl https://api-ipes.chimaobi.xyz/api/state \
   -H "Authorization: Bearer $SMARTDORM_TOKEN"
 ```
 
+Additional API actions: `POST /api/wallet/topup` adds a fixed ₦1,000 to the authenticated resident's virtual wallet. `POST /api/baskets/:id/meal` restarts the storage reminder for an occupied basket owned by that resident. Basket reservation accepts `plan: "week" | "three_days"`; prices are set server-side.
+
 ## Validation and backup
 
 ```sh
 npm test            # API integration tests, including concurrent conflict handling
-npm run build       # JavaScript syntax checks
+npm run build       # JavaScript checks and compiled Tailwind styles
 npx playwright install chromium
 npm start           # in another terminal; set a test reset PIN in the environment
 npm run test:browser
