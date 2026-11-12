@@ -1,0 +1,36 @@
+services:
+  smartdorm-api:
+    build: .
+    container_name: smartdorm-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3015
+      DB_PATH: /data/smartdorm.sqlite
+      TRUST_PROXY: 1
+    volumes:
+      - smartdorm-data:/data
+    networks:
+      - proxy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3015/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    mem_limit: 256m
+    cpus: 0.5
+    security_opt:
+      - no-new-privileges:true
+networks:
+  proxy:
+    external: true
+volumes:
+  smartdorm-data:

@@ -1,1 +1,42 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102b3a"><meta name="description" content="Smart dorm — a connected campus, a simpler everyday. Interactive hostel utilities demonstration."><title>Smart dorm · Your everyday, connected</title><link rel="stylesheet" href="style.css"></head><body><aside class="sidebar"><a class="brand" href="#overview"><span class="logo">s<span>·</span></span>smart dorm<span class="brand-dot">®</span></a><div class="residence"><span class="building">▥</span><div>Maple Hall<small>North Campus · Floor 02</small></div><span>⌄</span></div><small class="nav-label">YOUR SPACE</small><nav id="nav"></nav><div class="sidebar-bottom"><div class="online"><i></i> Your floor is connected</div><small>3 appliances · One less thing to worry about.</small><div class="profile"><span class="avatar">AJ</span><div>Alex Johnson<small>Room 204 · Demo student</small></div></div></div></aside><div class="shell"><header><div class="breadcrumb">Maple Hall <span>/</span> <b id="crumb">Overview</b></div><div class="header-actions"><span class="demo"><i></i> DEMO MODE</span><button class="icon-button" id="notifications" aria-label="View notifications">♧<span id="notif-count"></span></button><span class="avatar mini">AJ</span></div></header><main id="main"></main><footer>Made for shared spaces. Built for better days.<span>SMART DORM <i>●</i> SIMULATED IOT NETWORK</span></footer></div><div id="modal-root"></div><div id="toast" role="status"></div><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#102f3b" />
+    <meta
+      name="description"
+      content="Smartdorm by IPES. Your shared kitchen, laundry and secure refrigerator baskets, in one connected dashboard."
+    />
+    <title>Smartdorm · Your everyday, connected</title>
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="shell">
+      <header class="topbar">
+        <div class="breadcrumb">
+          IPES Residence <span>/</span> <strong id="crumb">Overview</strong>
+        </div>
+        <div class="top-actions" id="top-actions"></div>
+      </header>
+      <main id="main" tabindex="-1">
+        <div class="loading">
+          <span class="logo">s<span>·</span></span>
+          <h1>Making yourself at home.</h1>
+          <p>Connecting to Smartdorm…</p>
+        </div>
+      </main>
+      <footer>
+        Shared spaces. Better everyday.<span
+          >SMARTDORM <i>●</i> IPES RESIDENCE</span
+        >
+      </footer>
+    </div>
+    <div id="modal-root"></div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js" defer></script>
+  </body>
+</html>
