@@ -278,6 +278,13 @@ function controls() {
   );
 }
 function account(mode = "login") {
+  if (!state.user.demo && mode === "login") {
+    modal(
+      "Your account",
+      `<p>Signed in as <strong class="text-slate-900">${esc(state.user.username)}</strong>.</p><div class="card-actions">${btn("My bookings", "nav", "bookings", "primary", "calendar")}${btn("Sign out", "logout", "", "", "logout")}</div>`,
+    );
+    return;
+  }
   modal(
     mode === "register" ? "Create an account" : "Sign in to SmartHub",
     `<p>${mode === "register" ? "Create an account with a made-up username. No email, full name or personal details needed." : "Sign in to manage your baskets and bookings."}</p><form id="auth-form" data-mode="${mode}"><label for="username">Username</label><input id="username" name="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]+" autocomplete="username" required><label for="password">Password</label><input id="password" name="password" type="password" minlength="10" maxlength="128" autocomplete="${mode === "register" ? "new-password" : "current-password"}" required><p class="hint">Use at least 10 characters. For this presentation, choose a password you don’t use elsewhere.</p>${errorBox}<button class="btn primary full">${mode === "register" ? "Create account" : "Sign in"}</button></form><div style="margin-top:17px;text-align:center"><button class="text-btn" data-action="auth-mode" data-id="${mode === "register" ? "login" : "register"}">${mode === "register" ? "Already have an account? Sign in" : "New here? Create an account"}</button></div>${!state?.user.demo ? `<div class="card-actions" style="margin-top:18px">${btn("Sign out", "logout", "", "small")}</div>` : ""}`,

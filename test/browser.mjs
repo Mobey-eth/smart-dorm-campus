@@ -125,7 +125,7 @@ try {
   await page.getByRole("button", { name: "Confirm reset" }).click();
   await expect(page.getByRole("heading", { name: /^Hi, Emeka/ })).toBeVisible();
   await expect(page.locator(".modal")).toHaveCount(0);
-  await page.getByRole("button", { name: "Your account" }).click();
+  await page.locator("#top-actions").getByRole("button", { name: "Sign in", exact: true }).click();
   await page
     .getByRole("button", { name: "New here? Create an account" })
     .click();
